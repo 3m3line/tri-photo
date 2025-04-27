@@ -1,0 +1,43 @@
+.contenant {
+display: flex;
+gap: 10px;
+align-items: center;
+}
+
+.disabled-message {
+    color: #A44A3F; 
+    font-weight: bold;
+    width: 100%; 
+    margin-bottom: 2%;
+  }
+
+.pre {
+    background-color: #F6F4D2;
+    color: #A44A3F;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.button {
+    background-color: #A44A3F;
+    color: white;
+    padding: 4px;
+    border-radius: 4px;
+    border: 2px solid #A44A3F;
+    height: auto;
+    min-width: 57px;
+}
+
+.button:hover {
+    background-color: #F6F4D2;
+    color: #A44A3F;
+    
+}
+
+.button:disabled {
+    background-color: black;
+    color: #cbdfbd;
+    cursor: not-allowed;
+    border: black;
+}
+

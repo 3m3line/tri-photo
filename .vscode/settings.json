@@ -1,0 +1,9 @@
+{
+    "editor.autoClosingComments": "always",
+    "editor.autoClosingQuotes": "always",
+    "editor.quickSuggestionsDelay": 5,
+    "editor.quickSuggestions": {
+        "comments": "on",
+        "strings": "on"
+    }
+}

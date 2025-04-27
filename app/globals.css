@@ -1,6 +1,9 @@
 :root {
-  --background: #ffffff;
+  --background: #CBDFBD;
   --foreground: #171717;
+  --padding: 16px;
+  --border-radius: 8px;
+  --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -10,33 +13,99 @@
   }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+/* Reset and Base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-body {
-  color: var(--foreground);
+html, body {
+  /* max-width: 100vw;
+  min-height: 100vh; */
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
   background: var(--background);
+  color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+/* Main Container */
+main {
+  width: 100%;
+  max-width: 1400px;
+  padding: 0px 40px 80px;
+  margin: 0 auto;
 }
 
+
+/* Headers and Text */
+h1, h2, h3, h4 {
+  color: var(--foreground);
+  margin-bottom: 8px;
+}
+h2 {
+  margin-top: 4%;
+}
+
+/* Links */
 a {
   color: inherit;
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+/*code*/
+code {
+  display: block;         /* Optionnel : pour afficher le code en bloc, donc sur une nouvelle ligne */
+  overflow-wrap: break-word; /* Permet de couper les mots longs */
+  white-space: pre-wrap;   /* Permet au texte de revenir à la ligne et de respecter les espaces */
+  word-wrap: break-word;   /* Assure la gestion des coupures des mots longs */
+  max-width: 100%;         /* Si tu veux que le texte ne déborde pas */
+}
+
+/*header sticky*/
+header {
+  position: sticky;
+  top: 0;
+  background: #CBDFBD;
+  z-index: 1000; 
+  height: auto;
+  padding: 0px 40px 0px;
+  margin-top: 40px;
+  width: 100%;
+}
+/* @media (max-width: 898px) {
+  header {
+    position:relative;
+    z-index: 1100;
+  }
+} */
+
+.contenantHeader{
+  max-width: 1400px;
+  margin: auto;
+}
+.contenantHeader::after {
+  content: ""; /* Nécessaire pour le pseudo-élément */
+  position: absolute;
+  bottom: 0; /* Placer l'ombre en bas du header */
+  left: 0;
+  width: 100%;
+  height: 10px; /* hauteur de l'ombre */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0)); /* Dégradé du noir vers transparent */
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  :root {
+    --padding: 12px;
+  }
+
+  main {
+    max-width: 90%;
   }
 }
