@@ -21,7 +21,7 @@ function copyToClipboard(code, disabled = false, errorMessage, setButtonText) {
 function CodeBlock({ code, disabledCopy = false, errorMessage = "Échec de la copie du code." }) {
   const [buttonText, setButtonText] = useState('COPIER'); // État pour le texte du bouton
   return (
-    <div>
+    <div className="codeblockDiv">
       {disabledCopy && (
         <p className="disabled-message">{errorMessage}</p>
       )}

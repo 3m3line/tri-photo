@@ -92,9 +92,21 @@ export default function Home() {
     };
   }, []);
 
+  //fonction pour cacher formulaire au format tel
+  useEffect(() => {
+    const isMobile = window.innerWidth <= 898;// Détecte la taille de l'écran (largeur maximale de 898px) pour le formulaire
+  
+    // Par défaut, cacher le formulaire sur mobile
+    if (isMobile) {
+      setIsSecondSectionVisible(false);
+    }
+  }, []); // Ce useEffect ne s'exécute qu'une seule fois à l'initialisation
+
   //fonction de fermeture du collapse au scroll et click menu
   useEffect(() => {
+    const isMobile = window.innerWidth <= 898;// Détecte la taille de l'écran (largeur maximale de 898px) pour le formulaire
     const handleScrollOrNavClick = () => {
+      if (isMobile) return; //ignore la logique si format tel
       if (isButtonClicked) return; // Si le bouton a été cliqué, on ignore la logique de scroll
       if (window.scrollY === 0) {
         setIsSecondSectionVisible(true); // Ouvre le collapse quand on est en haut

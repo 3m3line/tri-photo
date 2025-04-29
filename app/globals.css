@@ -43,6 +43,8 @@ main {
 }
 
 
+
+
 /* Headers and Text */
 h1, h2, h3, h4 {
   color: var(--foreground);
@@ -58,14 +60,6 @@ a {
   text-decoration: none;
 }
 
-/*code*/
-code {
-  display: block;         /* Optionnel : pour afficher le code en bloc, donc sur une nouvelle ligne */
-  overflow-wrap: break-word; /* Permet de couper les mots longs */
-  white-space: pre-wrap;   /* Permet au texte de revenir à la ligne et de respecter les espaces */
-  word-wrap: break-word;   /* Assure la gestion des coupures des mots longs */
-  max-width: 100%;         /* Si tu veux que le texte ne déborde pas */
-}
 
 /*header sticky*/
 header {
@@ -107,5 +101,6 @@ header {
 
   main {
     max-width: 90%;
+    padding: 0px 4px 10px;
   }
 }

@@ -77,7 +77,7 @@
     color: var(--foreground);
   }
   
-  .formContainer input,
+  .formContainer input,site
   .formContainer select {
     width: 100%;
     padding: 8px;
@@ -119,6 +119,7 @@
 }
 .column1, .column2{
   flex-basis: 100%;
+  max-width: 100%;
 }
   }
 
