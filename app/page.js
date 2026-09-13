@@ -7,6 +7,7 @@ import CodeBlock from './codeBlock';
 
 
 
+
 export default function Home() {
 
   const [photoPath, setPhotoPath] = useState('');
@@ -33,6 +34,25 @@ export default function Home() {
     setPerson('');
   }, [photoPath]);
 
+  //const pour le remplissage/effacage du chemin exiftool dans le header
+  const setDefaultPath = () => {
+    setExiftoolPath("C:\\Users\\user\\Desktop\\exiftool-13.04_64");
+  };
+  const clearPathExiftool = () => {
+    setExiftoolPath("");
+  };
+
+  //génère le nom dans etape 2 (2.3)
+  const personMap = {
+    MAM: 'MAM',
+    PAPA: 'PAPA',
+    VAL: 'VAL',
+    EME: 'EME',
+    JO: 'JO',
+    ADRIEN: 'ADRIEN',
+    DODO: 'DODO'
+  };
+
   //const pour retirer dossier enfant pour Etape 3 
   const extractPathParts = (fullPath) => {
     const parts = fullPath.split('\\');
@@ -40,6 +60,14 @@ export default function Home() {
     const parentPath = parts.join('\\'); // Chemin parent
     return { parentPath, lastPart };
   };
+
+  //const month (notamment pour etape 4.2)
+  const [monthNumber, setMonthNumber] = useState(""); // exemple : "10" pour octobre
+
+  //const pour les input du form dans erreurs pour les metadonnées (etapes 4.2.c)
+  const [errorFileDate, setErrorFileDate] = useState("");
+  const [errorFileName, setErrorFileName] = useState("");
+  const [fileType, setFileType] = useState("photo");
 
   // Fonction pour montrer ou cacher le bouton "Back to Top"
   useEffect(() => {
@@ -127,18 +155,6 @@ export default function Home() {
     };
   }, [isButtonClicked]); 
   
-
-  //génère le nom dans etape 2 (2.3)
-  const personMap = {
-    MAM: 'MAM',
-    PAPA: 'PAPA',
-    V: 'V',
-    E: 'E',
-    J: 'J',
-    A: 'A',
-    D: 'D'
-  };
-
 //genere le changement de nom de dossier dans le code à copier
   const generateCode = (command) => {
     const { parentPath, lastPart } = extractPathParts(dossierAllPath);
@@ -165,9 +181,9 @@ export default function Home() {
           <h1 className={styles.h1}>Aide tri photo</h1>
           <nav className={styles.menu}>
             <Link href="#preparation"><button className={styles.menuButton}>I. Préparation</button></Link>
-            <Link href="#traitement"><button className={styles.menuButton}>II. Traitement</button></Link>
+            <Link href="#renommage"><button className={styles.menuButton}>II. Renommage par personne</button></Link>
             <Link href="#rassemblement"><button className={styles.menuButton}>III. Rassemblement</button></Link>
-            <Link href="#correction"><button className={styles.menuButton}>IV. Correction</button></Link>
+            <Link href="#traitement"><button className={styles.menuButton}>IV. Traitement de l'ensemble</button></Link>
             <Link href="#amelioration"><button className={styles.menuButton}>V. Amélioration Tri</button></Link>
           </nav>
           </section>
@@ -184,22 +200,91 @@ export default function Home() {
                 </div>
                 {/* Exiftool Path */}
                 <div>
+                  <div className={styles.exiftoolHeader}> 
                   <label htmlFor="chemin-exiftool">Chemin du dossier avec exiftool :</label>
+                  {/* Icône fleche */}
+                  <svg
+                    onClick={setDefaultPath}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ cursor: "pointer" }}
+                    title="Remplir automatiquement"
+                  >
+                    {/* rectangle allongé, placé en bas */}
+                    <rect x="3" y="14" width="18" height="6" rx="1" ry="1" />
+                    
+                    {/* flèche vers le bas, bien au-dessus */}
+                    <path d="M12 2v6" />          {/* tige de la flèche */}
+                    <path d="M9 7l3 3 3-3" />     {/* tête de la flèche */}
+                  </svg>
+                  {/* Icône poubelle */}
+                  <svg
+                    onClick={clearPathExiftool}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ cursor: "pointer" }}
+                    title="Vider le champ"
+                  >
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14H6L5 6" />
+                    <path d="M10 11v6" />
+                    <path d="M14 11v6" />
+                    <path d="M8 6V4h8v2" />
+                  </svg></div>
                   <input type="text" id="chemin-exiftool" value={exiftoolPath} onChange={handleExiftoolPathChange} placeholder="Entrez le chemin" />
                 </div>
-                {/* Person */}
-                <div>
-                  <label htmlFor="choix">Choisissez la personne concernée :</label>
-                  <select id="choix" value={person} onChange={handlePersonChange}>
-                    <option value="">-- Sélectionnez une personne --</option>
-                    <option value="MAM">Maman</option>
-                    <option value="PAPA">Papa</option>
-                    <option value="V">Valentin</option>
-                    <option value="E">Emeline</option>
-                    <option value="J">Jonathan</option>
-                    <option value="A">Adrien</option>
-                    <option value="D">Domitille</option>
-                  </select>
+                <div className={styles.menuderoulant}>
+                  {/* Person */}
+                  <div>
+                    <label htmlFor="choix">La personne concernée :</label>
+                    <select id="choix" value={person} onChange={handlePersonChange}>
+                      <option value="">-- Sélectionnez une personne --</option>
+                      <option value="MAM">Maman</option>
+                      <option value="PAPA">Papa</option>
+                      <option value="VAL">Valentin</option>
+                      <option value="EME">Emeline</option>
+                      <option value="JO">Jonathan</option>
+                      <option value="ADRIEN">Adrien</option>
+                      <option value="DODO">Domitille</option>
+                    </select>
+                  </div>
+                  {/* Mois */}
+                  <div>
+                    <label htmlFor="choix-mois">Le mois traité :</label>
+                    <select
+                      id="choix-mois"
+                      value={monthNumber}
+                      onChange={(e) => setMonthNumber(e.target.value)}
+                    >
+                      <option value="">-- Sélectionnez le mois --</option>
+                      <option value="01">Janvier</option>
+                      <option value="02">Février</option>
+                      <option value="03">Mars</option>
+                      <option value="04">Avril</option>
+                      <option value="05">Mai</option>
+                      <option value="06">Juin</option>
+                      <option value="07">Juillet</option>
+                      <option value="08">Août</option>
+                      <option value="09">Septembre</option>
+                      <option value="10">Octobre</option>
+                      <option value="11">Novembre</option>
+                      <option value="12">Décembre</option>
+                    </select>
+                  </div>
                 </div>
                 {/* Dossier All Path */}
                 <div>
@@ -212,10 +297,25 @@ export default function Home() {
         </div>
       </header>
       <main className={styles.main}>
-        <section id="preparation" className={styles.sepEtapes}>     
-          <h2 className={styles.sansCode}>ETAPE 1 : PREPARER LES ELEMENTS POUR TRAVAILLER</h2>
-          <div className={styles.column}>    
-            <article className={styles.column1}>            
+        <section id="preparation" className={styles.sepEtapes}> 
+          <h2 className={styles.sansCode}>ETAPE 1 : PREPARER LES ELEMENTS POUR TRAVAILLER</h2>    
+          <div className={`${styles.column} ${styles.sepCode}`}>    
+
+            <article className={styles.column1}>
+              
+              <h3>1.	Récuperer les photos de tout le monde</h3>
+              <p>a. Récupérer les photos des membres de la famille qui les tries, les décompresser et les classer dans un dossier à leur nom</p>
+              <br></br>
+              <p>b. Reprendre signal pour le mois à trier, et y télécharger les photos de PAPA et GRANDMERE en les renommant avec la nomenclature suivante : 
+              </p>
+              <p>AAAA-MM-JJ_00-00-00-_NOM_detail.ext</p>
+              <br></br>
+              <p>c.	Pour chaque personne, vérifier s'il y a des photos qui ne sont pas du mois et si oui les classer dans le bon mois</p></article>
+            <article className={styles.column2}>
+            </article></div>
+          <div className={styles.column}>
+            <article className={styles.column1}> 
+              <h3>2. Préparer les outils de commande</h3>           
               <p>a. Ouvrir les outils de commande : invite de commande et powershell</p>
               <p>b. Taper le code :</p>
             </article>
@@ -225,43 +325,58 @@ export default function Home() {
             errorMessage="Veuillez spécifier le chemin exiftool pour copier !" /></article>
           </div> 
         </section>
-        <section id="traitement" className={styles.sepEtapes}>
+        <section id="renommage" className={styles.sepEtapes}>
           
           <article className={styles.sansCode}>
-            <h2>ETAPE 2 : TRAITER LES ELEMENTS DU DOSSIER</h2>
+            <h2>ETAPE 2 : RENOMMER LES PHOTOS DANS CHAQUE DOSSIER</h2>
             <h3>1. Renommer les fichiers avec la bonne nomenclature</h3>
-            <p>Nomenclature : AAAA-MM-JJ_NOM_detail (sans accent et espace)</p>
+            <p>Nomenclature : AAAA-MM-JJ__hh-mm-ss-_NOM_detail.ext</p>
           </article>
-          <div className={`${styles.column} ${styles.sepCode}`}>
+          <div className={styles.column}>
             <article className={styles.column1}>
-              <h4>1.1. Supprimer les espaces</h4>
-              <p>a. Aller dans invite de commande</p>
-              <p>b. Taper le code :</p>              
-            </article>
-            <article className={styles.column2}>
-              <CodeBlock code={generateCode('exiftool "-FileName<$directory/${filename;s/ /-/g}" -r "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\JO"')} 
-              disabledCopy={isEmpty(photoPath)}
-              errorMessage="Veuillez spécifier le chemin du dossier des photos à modifier !"/></article>
-            </div>
-            <div className={`${styles.column} ${styles.sepCode}`}>
-            <article className={styles.column1}>
-              <h4>1.2. Supprimer les accents</h4>
+              <h4>Mettre en forme date, ajout de l'heure par défaut et ajouter le nom</h4>
               <p>a. Aller dans powershell</p>
-              <p>b. Taper le code :</p>              
-            </article>
-            <article className={styles.column2}>
-              <CodeBlock code={generateCode('Get-ChildItem -Path "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\JO" -Recurse | Rename-Item -NewName { $newname = $_.Name -replace "[éèêë]","e" -replace "[àâä]","a" -replace "[ôö]","o" -replace "[îï]","i" -replace "[ûü]","u" -replace "[ç]","c" -replace " ", "-"; $newname }')} 
-              disabledCopy={isEmpty(photoPath)}
-              errorMessage="Veuillez spécifier le chemin du dossier des photos à modifier !"/></article>
-            </div>
-            <div className={`${styles.column} ${styles.sepCode}`}>
-            <article className={styles.column1}>
-              <h4>1.3. Mettre en forme date et ajouter nom</h4>
-              <p>a. Aller dans invite de commande</p>
               <p>b. Taper le code :</p>
             </article>
             <article className={styles.column2}>
-              <CodeBlock code={generateCode(`exiftool "-FileName<\${FileName;s/^(\\d{4})(\\d{2})(\\d{2})([-_])?/\${1}-$2-$3_${person}_/; s/(?<=\\d{4}-\\d{2}-\\d{2})(?!_${person}_)/_${person}_/}" "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\JO"`)}
+              <CodeBlock
+                code={generateCode(
+                  [
+                    'Get-ChildItem -Path "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\JO" -File | ForEach-Object {',
+    '    $nomOriginal = $_.Name',
+    '',
+    '    # On ne traite que les fichiers qui n\'ont pas encore été renommés par ce script',
+    '    if ($nomOriginal -notmatch \'^\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}-_' + person + '_\') {',
+    '',
+    '        if ($nomOriginal -match \'^(\\d{4})(?:-)?(\\d{2})(?:-)?(\\d{2})(?:_(\\d{2}-\\d{2}-\\d{2}))?\') {',
+    '',
+    '            $annee  = $matches[1]',
+    '            $mois   = $matches[2]',
+    '            $jour   = $matches[3]',
+    '            $heure  = if ($matches[4]) { $matches[4] } else { \'00-00-00\' }',
+    '',
+    '            $datePartie  = "$annee-$mois-$jour"',
+    '            $heurePartie = $heure',
+    '',
+    '            # Supprime la date + heure du début',
+    '            $textePartie = $nomOriginal -replace \'^\\d{4}(?:-)?\\d{2}(?:-)?\\d{2}(?:_\\d{2}-\\d{2}-\\d{2})?\', \'\'',
+    '            $textePartie = $textePartie -replace \'^[_\\-]+\', \'\'',
+    '            $textePartie = $textePartie -replace \'^(_' + person + '_)+\', \'\'',
+    '',
+    '            $nouveauNom = "${datePartie}_${heurePartie}-_' + person + '_$textePartie"',
+    '',
+    '            if ($nouveauNom -ne $nomOriginal) {',
+    '                Rename-Item -LiteralPath $_.FullName -NewName $nouveauNom -Force',
+    '                Write-Host "Renommé : $nomOriginal -> $nouveauNom"',
+    '            }',
+    '        }',
+    '        else {',
+    '            Write-Host "Format non reconnu : $nomOriginal"',
+    '        }',
+    '    }',
+    '}'
+  ].join("\n")
+)}
               disabledCopy={person === '' || isEmpty(photoPath)}
               errorMessage={
                 person === '' && isEmpty(photoPath)
@@ -271,55 +386,8 @@ export default function Home() {
                   : isEmpty(photoPath)
                   ? "Veuillez spécifier le chemin du dossier des photos à modifier !"
                   : ""
-              }/></article>
-          </div>
-          <article className={styles.sansCode}>
-            <h3>2. Redater les métadonnées des photos et vidéos</h3>
-          </article>
-          <div className={`${styles.column} ${styles.sepCode}`}>
-            <article className={styles.column1}>
-              <h4>2.1. Redater les photos</h4>
-              <p>a. Aller dans invite de commande</p>
-              <p>b. Taper le code :</p>
+              }/>
             </article>
-            <article className={styles.column2}>
-              <CodeBlock 
-                code={generateCode('exiftool -ignoreMinorErrors "-AllDates<DateTimeOriginal" "-FileModifyDate<DateTimeOriginal" "-FileCreateDate<DateTimeOriginal" -overwrite_original -r "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\JO"')}
-                disabledCopy={isEmpty(photoPath)}
-                errorMessage="Veuillez spécifier le chemin du dossier des photos à modifier !"
-             /></article>
-          </div>
-          <div className={`${styles.column} ${styles.sepCode}`}>
-            <article className={styles.column1}>
-              <h4>2.2. Redater les vidéos</h4>
-              <p>a. Aller dans invite de commande</p>
-              <p>b. Taper le code :</p>
-            </article>
-            <article className={styles.column2}>
-              <CodeBlock 
-                code={generateCode('exiftool "-FileCreateDate<CreateDate" "-FileModifyDate<CreateDate" "-QuickTime:CreateDate<CreateDate" "-QuickTime:ModifyDate<CreateDate" "-AllDates<CreateDate" -overwrite_original -r -ext mov -ext mp4 -ext avi "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\JO"')} 
-                disabledCopy={isEmpty(photoPath)}
-                errorMessage="Veuillez spécifier le chemin du dossier des photos à modifier !"/></article>
-          </div>
-          <div className={`${styles.column}`}>
-            <article className={styles.column1}>
-              <h4>2.3. Redater les fichiers corrompus par WhatsApp grâce à la date dans le nom du fichier</h4>
-              <p>a. Aller dans invite de commande</p>
-              <p>b. Taper le code :</p>
-            </article>
-            <article className={styles.column2}>
-              <CodeBlock 
-              code={generateCode(
-                `exiftool ^ 
-  "-AllDates<\${Filename;s/(\\\d{4})-(\\\d{2})-(\\\d{2})_.*/$1:$2:$3 12:00:00/}" ^ 
-  "-FileModifyDate<\${Filename;s/(\\\d{4})-(\\\d{2})-(\\\d{2})_.*/$1:$2:$3 12:00:00/}" ^ 
-  "-FileCreateDate<\${Filename;s/(\\\d{4})-(\\\d{2})-(\\\d{2})_.*/$1:$2:$3 12:00:00/}" ^ 
-  -if "not $DateTimeOriginal or \${DateTimeOriginal;s/:/-/g} !~ /^\${Filename;$_=lc($_);s/(\\\d{4})-(\\\d{2})-(\\\d{2})_.*/$1-$2-$3/}/" ^ 
-  -overwrite_original ^ 
-  "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\03Mars\\VAL_MARS_2025\\*.*"`
-              )}
-              disabledCopy={isEmpty(photoPath)}
-              errorMessage="Veuillez spécifier le chemin du dossier des photos à modifier !"/></article>
           </div>
         </section>
         <section id="rassemblement" className={styles.sepEtapes}>       
@@ -336,41 +404,242 @@ export default function Home() {
               errorMessage="Veuillez spécifier le chemin du dossier avec les photos rassemblées !"/></article>
           </div>
         </section>
-        <section id="correction" className={styles.sepEtapes}>
-          <h2 className={styles.sansCode}>ETAPE 4. CORRECTION DES BUGS/ DOUBLONS/MAUVAIS MOIS</h2>
+        <section id="traitement" className={styles.sepEtapes}>
+          <h2 className={styles.sansCode}>ETAPE 4. TRAITER LES ELEMENTS DU DOSSIER</h2>
             <div className={`${styles.column} ${styles.sepCode}`}>
               <article className={styles.column1}>
-                <h3>1. Vérifier que les dates dans le nom et la métadonnée sont les mêmes si non corriger</h3>
-                <p>a. Aller dans invite de commande</p>
-                <p>b. Taper le code :</p></article>
+                <h3>1. Supprimer les espaces et les accents</h3>
+                <p>a. Aller dans powershell</p>
+                <p>b. Taper le code :</p>
+              </article>
               <article className={styles.column2}>
-                <CodeBlock code={generateCode('exiftool "-AllDates<${Filename; s/(\\d{4})-(\\d{2})-(\\d{2}).*/$1:$2:$3 00:00:00/}" "-FileModifyDate<${Filename; s/(\\d{4})-(\\d{2})-(\\d{2}).*/$1:$2:$3 00:00:00/}" "-FileCreateDate<${Filename; s/(\\d{4})-(\\d{2})-(\\d{2}).*/$1:$2:$3 00:00:00/}" -if "not $DateTimeOriginal or $DateTimeOriginal !~ /^${Filename; s/(\\d{4})-(\\d{2})-(\\d{2}).*/$1:$2:$3/}/" -overwrite_original "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\2025-01-RASSEMBLEMENT-PHOTOS\\*.*"')} 
-                disabledCopy={isEmpty(dossierAllPath)}
-                errorMessage="Veuillez spécifier le chemin du dossier avec les photos rassemblées !"/></article>
+                <CodeBlock
+                  code={generateCode([
+                    'Get-ChildItem -Path "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\2025-01-RASSEMBLEMENT-PHOTOS" -Recurse |',
+                    'Where-Object { -not $_.PSIsContainer } |',
+                    'Rename-Item -NewName {',
+                    '    $name = $_.BaseName',
+                    '    $ext  = $_.Extension',
+                    '',
+                    '    # Remplacer les accents',
+                    '    $name = $name -replace "[éèêë]","e"',
+                    '    $name = $name -replace "[àâä]","a"',
+                    '    $name = $name -replace "[ôö]","o"',
+                    '    $name = $name -replace "[îï]","i"',
+                    '    $name = $name -replace "[ûü]","u"',
+                    '    $name = $name -replace "[ç]","c"',
+                    '',
+                    '    # Remplacer les espaces par des -',
+                    '    $name = $name -replace " ","-"',
+                    '',
+                    '    # Supprimer les apostrophes et autres caractères spéciaux',
+                    '    $name = $name -replace "[`\'""&;,!:?()]",""',
+                    '',
+                    '    # Recombiner avec l\'extension',
+                    '    "$name$ext"',
+                    '}'
+                  ].join("\n"))}
+
+                  disabledCopy={isEmpty(dossierAllPath)}
+                  errorMessage="Veuillez spécifier le chemin du dossier avec les photos rassemblées !"
+                />
+              </article>
             </div>
             <article className={styles.sansCode}>
-              <h3>2. Vérifier les doublons et supprimer si besoin</h3>
-              <p>Reprendre les photos et vérifier visuellement</p>
+              <h3>2. Corriger les dates non visibles des documents (métadonnée) pour éviter les erreurs et que cela corresponde au bon mois</h3>
+               <p>a. Revérifier si il y a des photos qui ne sont pas du mois et si oui les classer dans le bon mois</p>
             </article>
-            <article className={styles.sansCode}>
-              <h3>3. Oter photo qui ne sont pas du mois</h3>
-              <p>a. Reprendre le fichier avec les photos</p>
-              <p>b. Récupérer celles qui ne sont pas du mois à trier</p>
-              <p>c. Les mettre dans un dossier pour le mois suivant en attendant son tri</p>
-            </article>
+            <div className={styles.column}>
+              <article className={styles.column1}>
+                <h4>b. Pour les photos</h4>
+                <p>i. Aller dans invite de commande</p>
+                <p>ii. Taper le code :</p>
+              </article>
+              <article className={styles.column2}>
+                <CodeBlock
+                  code={generateCode( `exiftool ^ -ext jpg -ext jpeg -ext png -ext heic -ext cr2 -ext nef -ext arw -ext dng ^ "-AllDates<\${Filename;s/(\\d{4})-(\\d{2})-(\\d{2})_.*/$1:$2:$3 00:00:00/}" ^ "-FileModifyDate<\${Filename;s/(\\d{4})-(\\d{2})-(\\d{2})_.*/$1:$2:$3 00:00:00/}" ^ "-FileCreateDate<\${Filename;s/(\\d{4})-(\\d{2})-(\\d{2})_.*/$1:$2:$3 00:00:00/}" ^ -if "(not $DateTimeOriginal) or ($DateTimeOriginal !~ /^\${Filename;$_=lc($_);s/(\\d{4})-(\\d{2})-(\\d{2})_.*/$1:$2:$3/}/ and $DateTimeOriginal !~ /^....:${monthNumber}:/)" ^ -overwrite_original ^ "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\2025-01-RASSEMBLEMENT-PHOTOS\\*.*"`
+                  )}
+                  disabledCopy={isEmpty(dossierAllPath) || isEmpty(monthNumber)}
+                  errorMessage={
+                    isEmpty(monthNumber) && isEmpty(dossierAllPath)
+                      ? "Veuillez spécifier le mois traité, et le chemin du dossier avec les photos rassemblées !"
+                      : isEmpty(monthNumber)
+                      ? "Veuillez spécifier le mois traité !"
+                      : isEmpty(dossierAllPath)
+                      ? "Veuillez spécifier le chemin du dossier avec les photos rassemblées !"
+                      : ""
+                  }
+                />
+              </article>
+            </div>
+            <div className={styles.column}>
+              <article className={styles.column1}>
+                <h4>c. Pour les videos</h4>
+                <p>i. Aller dans invite de commande</p>
+                <p>ii. Taper le code :</p>
+              </article>
+              <article className={styles.column2}>
+                <CodeBlock
+                  code={generateCode( `exiftool ^ -ext mp4 -ext mov -ext avi -ext m4a -ext mkv -ext flv ^ "-AllDates<\${Filename;s/(\\d{4})-(\\d{2})-(\\d{2})_.*/$1:$2:$3 00:00:00/}" ^ "-MediaCreateDate<\${Filename;s/(\\d{4})-(\\d{2})-(\\d{2})_.*/$1:$2:$3 00:00:00/}" ^ "-FileModifyDate<\${Filename;s/(\\d{4})-(\\d{2})-(\\d{2})_.*/$1:$2:$3 00:00:00/}" ^ "-FileCreateDate<\${Filename;s/(\\d{4})-(\\d{2})-(\\d{2})_.*/$1:$2:$3 00:00:00/}" ^ -if "$Filename =~ /(\\d{4})-(\\d{2})-(\\d{2})_/ and (not $MediaCreateDate or $MediaCreateDate !~ /^\${Filename;$_=lc($_);s/(\\d{4})-(\\d{2})-(\\d{2})_.*/$1:$2:$3/}/ and $MediaCreateDate !~ /^....:${monthNumber}:/)" ^ -overwrite_original ^ "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\2025-01-RASSEMBLEMENT-PHOTOS\\*.*"`
+                  )}
+                  disabledCopy={isEmpty(dossierAllPath) || isEmpty(monthNumber)}
+                  errorMessage={
+                    isEmpty(monthNumber) && isEmpty(dossierAllPath)
+                      ? "Veuillez spécifier le mois traité, et le chemin du dossier avec les photos rassemblées !"
+                      : isEmpty(monthNumber)
+                      ? "Veuillez spécifier le mois traité !"
+                      : isEmpty(dossierAllPath)
+                      ? "Veuillez spécifier le chemin du dossier avec les photos rassemblées !"
+                      : ""
+                  }
+                />
+              </article>
+            </div>
+            <div className={`${styles.column} ${styles.sepCode}`}>
+              <article className={styles.column1}>
+                <h3>Erreur</h3>
+                <h4>c. En cas de fichier corrompu au niveau de la metadonnée</h4>
+                <p>i. Renseigner les éléments (nom du fichier et date) dans les encarts prévus</p>
+                <p>ii. Aller dans invite de commande</p>
+                <p>iii. Taper le code :</p>  
+              </article>
+
+              <article className={styles.column2}>
+                {/* Inputs pour date et nom de fichier */}
+                <form className={styles.formContainer}>
+                  <label className={styles.types}>
+                    Type de fichier :
+                    <span className={styles.radioWrapper}>
+                      <input
+                        type="radio"
+                        name="fileType"
+                        value="photo"
+                        checked={fileType === "photo"}
+                        onChange={() => setFileType("photo")}
+                        className={styles.radioButton}
+                      />
+                      <span className={styles.radioLabel}>Photo</span>
+                    </span>
+                    <span className={styles.radioWrapper}>
+                      <input
+                        type="radio"
+                        name="fileType"
+                        value="video"
+                        checked={fileType === "video"}
+                        onChange={() => setFileType("video")}
+                        className={styles.radioButton}
+                      />
+                      <span className={styles.radioLabel}>Vidéo</span>
+                    </span>
+                  </label>
+
+                  <label>
+                    Date (ex : 2026:01:01 00:00:00) :
+                    <input
+                      type="text"
+                      value={errorFileDate}
+                      onChange={(e) => setErrorFileDate(e.target.value)}
+                      placeholder="2026:01:01 00:00:00"
+                      style={{ marginLeft: "5px", width: "250px" }}
+                    />
+                  </label>
+                  <br />
+                  <label style={{ marginTop: "5px", display: "block" }}>
+                    Nom du fichier :
+                    <input
+                      type="text"
+                      value={errorFileName}
+                      onChange={(e) => setErrorFileName(e.target.value)}
+                      placeholder="exemple-nom.jpg"
+                      style={{ marginLeft: "5px", width: "500px" }}
+                    />
+                  </label>
+                </form>
+                <CodeBlock
+                  code={generateCode(
+                      `exiftool -all= "-${
+                        fileType === "photo" ? "DateTimeOriginal" : "MediaCreateDate"
+                      }=${errorFileDate}" -overwrite_original "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\2025-01-RASSEMBLEMENT-PHOTOS\\${errorFileName}"`
+                    )}
+                  disabledCopy={isEmpty(errorFileDate) || isEmpty(errorFileName) || isEmpty(dossierAllPath)}
+                  errorMessage={
+                    isEmpty(errorFileDate) && isEmpty(errorFileName) && isEmpty(dossierAllPath)
+                      ? "Veuillez spécifier la date, le nom du fichier et le chemin du dossier avec les photos rassemblées !"
+                      : isEmpty(errorFileDate) && isEmpty(errorFileName)
+                      ? "Veuillez spécifier la date et le nom du fichier !"
+                      : isEmpty(dossierAllPath) && isEmpty(errorFileName)
+                      ? "Veuillez spécifier le nom du fichier et le chemin du dossier avec les photos rassemblées !"
+                      : isEmpty(dossierAllPath) && isEmpty(errorFileDate)
+                      ? "Veuillez spécifier la date et le chemin du dossier avec les photos rassemblées !"
+                      :isEmpty(errorFileDate)
+                      ? "Veuillez spécifier la date !"
+                      : isEmpty(errorFileName)
+                      ? "Veuillez spécifier le nom du fichier !"
+                      : isEmpty(dossierAllPath)
+                      ? "Veuillez spécifier le chemin du dossier avec les photos rassemblées !"
+                      : ""
+                  }
+                />
+              </article>
+            </div>
+            <div className={`${styles.column} ${styles.sepCode}`}>
+              <article className={styles.column1}>
+                <h3>3. Mettre les bonnes heures aux photos</h3>
+                <p>a. Aller dans powershell</p>
+                <p>b. Taper le code :</p>
+              </article>
+
+              <article className={styles.column2}>
+                <CodeBlock
+                  code={generateCode(
+                    [
+                      ".\\exiftool -m -r `",
+                      "  -ext jpg -ext jpeg -ext png `",
+                      "  -if 'defined $DateTimeOriginal and $FileName =~ /^(\\d{4}-\\d{2}-\\d{2})_\\d{2}-\\d{2}-\\d{2}-_/' `",
+                      '  -d "%Y-%m-%d_%H-%M-%S" `',
+                      "  '-FileName<${DateTimeOriginal}-_${FileName;s/^.*?-_//}' `",
+                      "  -overwrite_original `",
+                      '  "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\2025-01-RASSEMBLEMENT-PHOTOS\\*.*"'
+                    ].join("\n")
+                  )}
+                  disabledCopy={isEmpty(dossierAllPath)}
+                  errorMessage="Veuillez spécifier le chemin du dossier avec les photos rassemblées !"
+                />
+              </article>
+            </div>
+            <div className={styles.column}>
+              <article className={styles.column1}>
+                <h3>4. Mettre les bonnes heures aux vidéos</h3>
+                <p>a. Aller dans powershell</p>
+                <p>b. Taper le code :</p>
+              </article>
+
+              <article className={styles.column2}>
+                <CodeBlock
+                  code={generateCode(
+                    [
+                      ".\\exiftool -m -r `",
+                      "  -ext mp4 -ext mov -ext avi -ext m4a `",
+                      "  -if 'defined $MediaCreateDate and $FileName =~ /^(\\d{4}-\\d{2}-\\d{2})_\\d{2}-\\d{2}-\\d{2}-_/ and $FileName !~ /_VAL_/' `",
+                      '  -d "%Y-%m-%d_%H-%M-%S" `',
+                      "  '-FileName<${MediaCreateDate}-_${FileName;s/^.*?-_//}' `",
+                      "  -overwrite_original `",
+                      '  "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\2025-01-RASSEMBLEMENT-PHOTOS\\*.*"'
+                    ].join("\n")
+                  )}
+             
+                  disabledCopy={isEmpty(dossierAllPath)}
+                  errorMessage="Veuillez spécifier le chemin du dossier avec les photos rassemblées !"
+                />
+              </article>
+            </div>            
         </section>
         <section id="amelioration">
           <h2 className={styles.sansCode}>ETAPE 5. AMELIORATION DU TRI DES PHOTOS POUR AIDER AU MONTAGE</h2>
-          <div className={`${styles.column} ${styles.sepCode}`}>
-            <article className={styles.column1}>
-              <h3>1. Ajout des lieux si besoin entre date et nom pour améliorer tri</h3>
+          <article className={styles.sansCode}>
+              <h3>1. Vérifier les doublons et supprimer si besoin </h3>
+              <p>Reprendre les photos et vérifier visuellement</p>
             </article>
-            <article className={styles.column2}>
-              <CodeBlock code={generateCode('exiftool "-FileName<${Filename; s/^(\\d{4}-\\d{2}-\\d{2})?_?/${1}_chtx_/}" -overwrite_original -if "$Filename =~ /chateauroux|calendrier|Grand-mere/i" -ext jpg -r "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\2025-01-RASSEMBLEMENT-PHOTOS"')} 
-              disabledCopy={isEmpty(dossierAllPath)}
-              errorMessage="Veuillez spécifier le chemin du dossier avec les photos rassemblées !"/>
-            </article>
-          </div>
           <div className={`${styles.column} ${styles.sepCode}`}>
             <article className={styles.column1}>
               <h3>2. Ajout d&apos;une séquence numérique</h3>
@@ -378,16 +647,18 @@ export default function Home() {
               <p>b. Taper le code :</p>
             </article>
             <article className={styles.column2}>
-              <CodeBlock code={generateCode(`$files = Get-ChildItem -Path "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\2025-01-RASSEMBLEMENT-PHOTOS" -Recurse -File |
-              Where-Object { $_.Extension -match "jpg|jpeg|png|mp4|mov|avi" } |
-              Sort-Object Name
-              $count = 1
-              foreach ($file in $files) {
-                  $newName = "{0:D3}_{1}" -f $count, $file.Name
-                  $newPath = Join-Path $file.DirectoryName $newName
-                  Rename-Item -Path $file.FullName -NewName $newPath
-                  $count++
-              }`)} 
+              <CodeBlock code={generateCode(`$dossier = "C:\\Users\\user\\Desktop\\PHOTOS\\2025\\Janvier\\2025-01-RASSEMBLEMENT-PHOTOS"
+$extensions = @("*.jpg", "*.jpeg", "*.png", "*.mp4", "*.mov", "*.avi", "*.m4a")
+
+Get-ChildItem -Path $dossier -Recurse -File -Include $extensions |
+    Sort-Object Name |
+    ForEach-Object -Begin { $count = 1 } -Process {
+        $newName = "{0:D3}_{1}" -f $count, $_.Name
+        $newPath = Join-Path $_.DirectoryName $newName
+        Rename-Item -Path $_.FullName -NewName $newName -ErrorAction SilentlyContinue
+        $count++
+    }
+`)} 
               disabledCopy={isEmpty(dossierAllPath)}
               errorMessage="Veuillez spécifier le chemin du dossier avec les photos rassemblées !"/>
             </article>
@@ -395,7 +666,24 @@ export default function Home() {
           <article className={styles.sansCode}>
             <h3>3. Modification de la séquence pour améliorer l'ordre</h3>
             <p>a. Reprendre les photos et vérifier visuellement</p>
-            <p>b. Modifier manuellement le numéro de la séquence numérique des photos si besoin pour avoir un ordre plus logique : rassembler les photos de personnes ensembles à la suite</p>
+            <p>b. Modifier manuellement le numéro de la séquence numérique des photos si besoin pour avoir un ordre plus logique (voir ci-dessous)</p>
+            <ul>
+              <h4 style={{ marginTop: "30px" }}>PROCESS</h4>
+              <li><strong>Séquence numérique ajoutée :</strong> Chaque photo reçoit un numéro unique pour garantir un ordre cohérent.</li>
+              <li style={{ marginTop: "10px" }}><strong>Classement par date et heure :</strong>
+                <ul>
+                  <li>Les photos d’événements communs se placent correctement selon leur <strong>date</strong> et <strong>heure</strong>. Mais ils peuvent être entrecoupé par des événements d'autres personnes, qu'ils faut donc déplacer''</li>
+                  <li>Les photos dont l’heure est par défaut 00-00-00 doivent être vérifier, car elles peuvent nécessiter un ajustement manuel.</li>
+                </ul>
+              </li>
+              <li style={{ marginTop: "10px" }}><strong>Regroupement des photos isolées :</strong>
+                <ul>
+                  <li>Les photos individuelles de personnes sont rassemblées ensemble pour éviter qu’elles se perdent au milieu d’autres blocs (événements ou personnes).</li>
+                  <li>Même si les dates ne sont pas parfaites, ce regroupement facilite la lecture et la compréhension des albums.</li>
+                  <li>Il faut essayer de réflechir au montage lors du tri : les photos ne sont pas parfaitement mises dans l'ordre chronologique, sinon on s'y perdrait (exemple d'usage : "pendant ce temps")'</li>
+                </ul>
+              </li>
+            </ul>
           </article>         
         </section>
       </main>
